@@ -3,7 +3,7 @@ from .models import Cliente
 
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
-        models = Cliente
+        model = Cliente
         fields = '__all__' #Inclui todos os campos do modelo
         # Para expor apenas alugns campos, use uma lista:
         # fields = ['id, 'nome', 'email']
