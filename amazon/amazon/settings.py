@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # APP's DE TERCEIROS
     "rest_framework", ## django rest 
-    "django_filters" ## suporte a filtros avançados
+    "django_filters", ## suporte a filtros avançados
+    "drf_yasg", ## doc swagger
     # APP's DO PROJETO
-    "backend" ## Logica de negocio
+    "backend", ## Logica de negocio
 ]
 
 MIDDLEWARE = [
