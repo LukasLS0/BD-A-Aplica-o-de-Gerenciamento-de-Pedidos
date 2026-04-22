@@ -19,7 +19,7 @@ from rest_framework import permissions
 
 
 schema_view = get_schema_view (
-    openapi.info(
+    openapi.Info(
         title ='Amazon API',
         default_version='v1',
         description='API RESTful para gerenciamento de pedidos',
@@ -32,5 +32,5 @@ schema_view = get_schema_view (
 
 urlpatterns += [
     path("swagger/", schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc'), cache_timeout=0, name='redoc-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc-ui'),
 ]
