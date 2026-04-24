@@ -28,6 +28,6 @@ class VendedorViewSet(viewsets.ModelViewSet):
     queryset = Vendendor.objects.all()
     serializer_class = VendedorSerializer
 
-class ProdutoSerializer(viewsets.ModelViewSet):
+class ProdutoViewSet(viewsets.ModelViewSet):
     queryset = Produto.objects.filter(disponivel=True) # apenas ativos
     serializer_class = ProdutoSerializer
