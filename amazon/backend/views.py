@@ -5,8 +5,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cliente
-from .serializers import ClienteSerializer
+from .models import Cliente, Vendendor, Produto
+from .serializers import ClienteSerializer, VendedorSerializer, ProdutoSerializer
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
@@ -23,3 +23,11 @@ class ClienteViewSet(viewsets.ModelViewSet):
     filterset_fields = ['nome', 'email'] # ?nome=Maria
     search_fields = ['nome', 'email'] # ?search=Maria
     ordering_fields = ['nome', 'data_cadastro'] # ?ordering=-data_cadastro
+
+class VendedorViewSet(viewsets.ModelViewSet):
+    queryset = Vendendor.objects.all()
+    serializer_class = VendedorSerializer
+
+class ProdutoSerializer(viewsets.ModelViewSet):
+    queryset = Produto.objects.filter(disponivel=True) # apenas ativos
+    serializer_class = ProdutoSerializer
