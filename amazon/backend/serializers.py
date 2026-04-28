@@ -1,7 +1,9 @@
 from typing import ReadOnly
 from django.forms import fields
 from rest_framework import serializers
-from .models import Cliente, Produto, Vendendor
+from .models import Cliente, FormaPagamento, Item, Pedido, Produto, Vendendor, Endereco
+
+
 
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,3 +26,24 @@ class ProdutoSerializer(serializers.ModelSerializer):
         model = Produto
         fields = '__all__' 
         extra_fields = ['categoria_display']
+
+class EnderecoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Endereco
+        fields = "__all__"
+
+class FormaPagamentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FormaPagamento
+        fields = "__all__"
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = "__all__"
+
+class PedidoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pedido
+        fields = "__all__"
+
