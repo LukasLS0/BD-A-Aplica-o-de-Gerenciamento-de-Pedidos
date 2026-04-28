@@ -5,7 +5,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cliente, Endereco, Item, Pedido, Vendendor, Produto
+from .models import Cliente, Endereco, Item, Pedido, Vendendor, Produto, FormaPagamento
 from .serializers import ClienteSerializer, EnderecoSerializer, FormaPagamentoSerializer, ItemSerializer, PedidoSerializer, VendedorSerializer, ProdutoSerializer
 
 
