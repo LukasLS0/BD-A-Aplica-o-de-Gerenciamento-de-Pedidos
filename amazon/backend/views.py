@@ -5,8 +5,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cliente, Vendendor, Produto
-from .serializers import ClienteSerializer, VendedorSerializer, ProdutoSerializer
+from .models import Cliente, Endereco, Item, Pedido, Vendendor, Produto
+from .serializers import ClienteSerializer, EnderecoSerializer, FormaPagamentoSerializer, ItemSerializer, PedidoSerializer, VendedorSerializer, ProdutoSerializer
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
@@ -31,3 +31,20 @@ class VendedorViewSet(viewsets.ModelViewSet):
 class ProdutoViewSet(viewsets.ModelViewSet):
     queryset = Produto.objects.filter(disponivel=True) # apenas ativos
     serializer_class = ProdutoSerializer
+
+class EnderecoViewSet(viewsets.ModelViewSet):
+    queryset = Endereco.objects.all()
+    serializer_class = EnderecoSerializer
+
+class FormaPagamentoViewSet(viewsets.ModelViewSet):
+    queryset = FormaPagamento.objects.all()
+    serializer_class = FormaPagamentoSerializer
+
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+
