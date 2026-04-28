@@ -7,6 +7,10 @@ router = DefaultRouter()
 router.register(r'clientes', views.ClienteViewSet, basename='cliente')
 router.register(r'vendedores', views.VendedorViewSet, basename='vendedor')
 router.register(r'produtos', views.ProdutoViewSet, basename='produto')
+router.register(r'enderecos', views.EnderecoViewSet, basename='endereco')
+router.register(r'formaspagamento', views.FormaPagamentoViewSet, basename='formapagamento')
+router.register(r'itens', views.ItemViewSet, basename='item')
+router.register(r'pedidos', views.PedidoViewSet, basename='pedido')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
