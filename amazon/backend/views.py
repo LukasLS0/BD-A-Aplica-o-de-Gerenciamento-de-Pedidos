@@ -5,8 +5,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cliente, Endereco, Item, Pedido, Vendendor, Produto, FormaPagamento
-from .serializers import ClienteSerializer, EnderecoSerializer, FormaPagamentoSerializer, ItemSerializer, PedidoSerializer, VendedorSerializer, ProdutoSerializer
+from .models import Cliente,   Pedido, Vendedor, Produto
+from .serializers import ClienteSerializer, PedidoSerializer, VendedorSerializer, ProdutoSerializer
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
@@ -25,24 +25,15 @@ class ClienteViewSet(viewsets.ModelViewSet):
     ordering_fields = ['nome', 'data_cadastro'] # ?ordering=-data_cadastro
 
 class VendedorViewSet(viewsets.ModelViewSet):
-    queryset = Vendendor.objects.all()
+    queryset = Vendedor.objects.all()
     serializer_class = VendedorSerializer
 
 class ProdutoViewSet(viewsets.ModelViewSet):
     queryset = Produto.objects.filter(disponivel=True) # apenas ativos
     serializer_class = ProdutoSerializer
 
-class EnderecoViewSet(viewsets.ModelViewSet):
-    queryset = Endereco.objects.all()
-    serializer_class = EnderecoSerializer
 
-class FormaPagamentoViewSet(viewsets.ModelViewSet):
-    queryset = FormaPagamento.objects.all()
-    serializer_class = FormaPagamentoSerializer
 
-class ItemViewSet(viewsets.ModelViewSet):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
 
 class PedidoViewSet(viewsets.ModelViewSet):
     queryset = Pedido.objects.all()

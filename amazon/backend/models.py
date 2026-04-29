@@ -15,7 +15,7 @@ class Cliente(models.Model):
         # Retorna a representação legível do objeto
         return f'{self.nome} <{self.email}>'
 
-class Vendendor(models.Model):
+class Vendedor(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     cpf_cpnj = models.CharField(max_length=18, unique=True)
@@ -32,7 +32,13 @@ class Vendendor(models.Model):
         return f"{self.nome} ({self.cpf_cpnj})"
 
 class Produto(models.Model):
-    
+    vendedor = models.ForeignKey(
+        Vendedor,
+        on_delete=models.PROTECT, #nao pode deletar um vendedor que tem produtos
+        related_name='produtos',
+        null=True,
+        blank=True
+    ) 
     CATEGORIA_CHOICES = [
         ('eletronicos', 'Eletrônicos'),
         ('roupas',      'Roupas e Acessórios'),
@@ -58,63 +64,67 @@ class Produto(models.Model):
         return f"{self.nome} - R$ {self.preco}"
 
 
-class Endereco(models.Model):
-    ## Precisa fazer choices para o estado? cidade?
-    ## cep
-    #cliente id
-    rua = models.CharField(max_length=255, null=False, blank=False)
-    cidade = models.CharField(max_length=100, null=False, blank=False)
-    estado = models.CharField(max_length=50, null=False, blank=False)
-    cep = models.CharField(max_length=10, null=False, blank=False)
+class PerfilVendedor(models.Model):
+    vendedor = models.OneToOneField(
+        Vendedor,
+        on_delete=models.CASCADE,
+        related_name='perfil',
+        primary_key=True
+    )
 
-    class Meta:
-        db_table = 'enderecos'
-        ordering = ['estado']
-
-    def __str__(self):
-        return f"{self.rua}, {self.cidade}-{self.estado}"
-
-class FormaPagamento(models.Model):
-    ## Precisa fazer o choices para as formas de pagamentos aceitadas
-    tipo = models.CharField(max_length=50, null=False, blank=False)
-
-    class Meta:
-        db_table = 'formas_pagamentos'
-        ordering = ['tipo']
+    razao_social = models.CharField(max_length=150, blank=True)
+    inscricao_estadual = models.CharField(max_length=20, blank=True)
+    banco = models.CharField(max_length=50, blank=True)
+    agencia = models.CharField(max_length=10, blank=True)
+    conta = models.CharField(max_length=20, blank=True)
+    chave_pix = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.tipo}"
-
-class Item(models.Model):
-    # fazer choices de categoria
-    # vendedor id
-    nome = models.CharField(max_length=100, null=False, blank=False)
-    preco = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
-    descricao = models.TextField(blank=True)
-    categoria = models.CharField(max_length=50, blank=True)
-    quantidade_estoque = models.IntegerField(null=False)
-
-    class Meta:
-        db_table = 'item'
-        ordering = ['nome']
-
-    def __str__(self):
-        return f"{self.nome} - {self.categoria}"
+        return f'Perfil de {self.vendedor.nome}'
 
 class Pedido(models.Model):
-    #cliente id
-    #endereco id
-    #forma pagamento
-    data = models.DateField()
-    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = 'pedidos'
-        ordering = ['data']
+    STATUS_CHOICES = [
+        ('pendente', 'Pendente'),
+        ('pago', 'Pago'),
+        ('enviado', 'Enviado'),
+        ('entregue', 'Entregue'),
+        ('cancelado', 'Cancelado'),
+    ]
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.PROTECT,
+        related_name='pedidos'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pendente'
+    )
+    data_pedido = models.DateTimeField(auto_now_add=True)
+    observacoes = models.TextField(blank=True)
 
     def __str__(self):
-        return f"{self.data} - {self.status}"
+        return f'Pedido #{self.id} de {self.cliente.nome} - Status: {self.status}'
 
-## devo fazer item_pedido?
+class ItemPedido(models.Model):
+    pedido = models.ForeignKey(
+        Pedido,
+        on_delete=models.CASCADE, #pode deletar um pedido mesmo que ele tenha itens
+        related_name='itens'
+    )
+    produto = models.ForeignKey(
+        Produto,
+        on_delete=models.PROTECT, #nao pode deletar um produto que esta em um pedido
+        related_name='itens_pedido'
+    )
+    quantidade = models.PositiveIntegerField(default=1)
+    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, editable=False) # o preco unitario nao pode ser alterado
 
+
+    def __str__(self):
+        return f'{self.quantidade} x {self.produto.nome} em #{self.pedido.id}'
+
+    @property
+    def subtotal(self):
+        return self.quantidade * self.preco_unitario
+        
