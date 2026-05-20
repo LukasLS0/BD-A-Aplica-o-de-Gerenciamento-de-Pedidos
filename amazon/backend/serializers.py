@@ -1,7 +1,7 @@
 # from typing import ReadOnly
 from django.forms import fields
 from rest_framework import serializers
-from .models import Cliente, Pedido, Produto, Vendedor
+from .models import Cliente, Pedido, Produto, Usuario, Vendedor
 
 
 
@@ -35,3 +35,18 @@ class PedidoSerializer(serializers.ModelSerializer):
         model = Pedido
         fields = "__all__"
 
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = ['id', 'username', 'email', 'password', 'tipo', 'cpf', 'telefone']
+
+    def create(self, validated_data):
+        senha = validated_data.pop('password')
+        usuario = Usuario(**validated_data)
+        usuario.set_password(senha)
+        usuario.save()
+        return usuario
+    

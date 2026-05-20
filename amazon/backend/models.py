@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.utils import choices
 
 
@@ -127,4 +128,22 @@ class ItemPedido(models.Model):
     @property
     def subtotal(self):
         return self.quantidade * self.preco_unitario
-        
+    
+
+class Usuario(AbstractUser):
+    class Tipo(models.TextChoices):
+        CLIENTE = 'CLIENTE', 'Cliente'
+        VENDEDOR = 'VENDEDOR', 'Vendedor'
+    
+    tipo = models.CharField(max_length=20, choices=Tipo.choices, default=Tipo.CLIENTE)
+    cpf = models.CharField(max_length=10, unique=True)
+    telefone = models.CharField(max_length=15, blank=True)
+
+    def is_cliente(self):
+        return self.tipo == self.Tipo.CLIENTE
+    
+    def is_vendedor(self):
+        return self.tipo == self.Tipo.VENDEDOR
+    
+    def __str__(self):
+        return f'{self.username} ({self.get_tipo_display()})'
