@@ -4,33 +4,25 @@ from django.utils import choices
 
 
 class Cliente(models.Model):
-    nome = models.CharField(max_length=100)
-    email = models.EmailField(unique=True) # UNIQUE NO BANCO
-    telefone = models.CharField(max_length=20, blank=True)
-    data_cadastro = models.DateTimeField(auto_now_add=True) # Preenchido automaticamente
-    class Meta:
-        db_table = 'clientes' # nome explícito da tabela no banco
-        ordering = ['nome'] # Oredenação padrão nas consultas
-    
+    nome = models.CharField(max_length=255, null=False, blank=False)
+    email = models.EmailField(unique=True)
+    telefone = models.CharField(max_length=15)
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        # Retorna a representação legível do objeto
-        return f'{self.nome} <{self.email}>'
+        return f'{self.nome} - {self.email} - {self.telefone}'
 
 class Vendedor(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=255, null=False, blank=False)
     email = models.EmailField(unique=True)
-    cpf_cpnj = models.CharField(max_length=18, unique=True)
-    telefone = models.CharField(max_length=20, blank=True)
-    avaliacao = models.DecimalField(max_digits=3, decimal_places=2, default=5.00)
+    cpf_cnpj = models.CharField(max_length=14, unique=True)
+    telefone = models.CharField(max_length=15)
+    avaliacao = models.DecimalField(max_digits=3, decimal_places=2)
     ativo = models.BooleanField(default=True)
     data_cadastro = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'vendedores'
-        ordering = ['nome']
-
     def __str__(self):
-        return f"{self.nome} ({self.cpf_cpnj})"
+        return f'{self.nome} - {self.email} - {self.telefone}'
 
 class Produto(models.Model):
     vendedor = models.ForeignKey(
@@ -40,30 +32,13 @@ class Produto(models.Model):
         null=True,
         blank=True
     ) 
-    CATEGORIA_CHOICES = [
-        ('eletronicos', 'Eletrônicos'),
-        ('roupas',      'Roupas e Acessórios'),
-        ('livros',      'Livros'),
-        ('alimentos',   'Alimentos'),
-        ('outros',      'Outros'),
-    ]
-
-    nome = models.CharField(max_length=200)
-    descricao = models.TextField(blank=True)
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
-    estoque = models.IntegerField(default=0)
-    categoria = models.CharField(max_length=20, choices=CATEGORIA_CHOICES, default='outros')
-    disponivel = models.BooleanField(default=True)
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True) # Atualiza a cada save
-
-    class Meta:
-        db_table = 'produtos'
-        ordering = ['nome']
+    nome = models.CharField(max_length=255, null=False, blank=False)
+    preco = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    descricao = models.TextField()
+    data_cadastro = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.nome} - R$ {self.preco}"
-
+        return f'{self.nome} - {self.preco} - {self.data_cadastro}'
 
 class PerfilVendedor(models.Model):
     vendedor = models.OneToOneField(
@@ -128,22 +103,23 @@ class ItemPedido(models.Model):
     @property
     def subtotal(self):
         return self.quantidade * self.preco_unitario
-    
+        
 
 class Usuario(AbstractUser):
     class Tipo(models.TextChoices):
         CLIENTE = 'CLIENTE', 'Cliente'
         VENDEDOR = 'VENDEDOR', 'Vendedor'
-    
-    tipo = models.CharField(max_length=20, choices=Tipo.choices, default=Tipo.CLIENTE)
-    cpf = models.CharField(max_length=10, unique=True)
+
+    tipo = models.CharField(max_length=10, choices=Tipo.choices, default=Tipo.CLIENTE,)
+
+    cpf = models.CharField(max_length=11, unique=True)
     telefone = models.CharField(max_length=15, blank=True)
 
     def is_cliente(self):
         return self.tipo == self.Tipo.CLIENTE
-    
+
     def is_vendedor(self):
         return self.tipo == self.Tipo.VENDEDOR
-    
+
     def __str__(self):
         return f'{self.username} ({self.get_tipo_display()})'
