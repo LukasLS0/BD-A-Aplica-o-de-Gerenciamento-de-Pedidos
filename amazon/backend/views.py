@@ -1,5 +1,6 @@
 from contextvars import Token
 
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Cliente,   Pedido, Vendedor, Produto
+from .models import Cliente,   Pedido, Usuario, Vendedor, Produto
 from .serializers import ClienteSerializer, PedidoSerializer, UsuarioSerializer, VendedorSerializer, ProdutoSerializer
 
 from rest_framework.decorators import api_view, permission_classes
@@ -61,6 +62,16 @@ def signup(request):
         token = Token.objects.create(user=usuario)
         return Response({'token': token.key, 'usuario': serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login(request):
+    usuario = get_object_or_404(Usuario, username=request.data.get('username'))
+    if not usuario.check_password(request.data.get('password')):
+        return Response({'detail': 'Credenciais inválidas.'}, status=status.HTTP_400_BAD_REQUEST)
+    token, _ = Token.objects.get_or_create(user=usuario)
+    return Response({'token': token.key, 'usuario': UsuarioSerializer(usuario).data})
+
 
 @api_view(['GET'])
 @permission_classes([TokenAuthentication])
